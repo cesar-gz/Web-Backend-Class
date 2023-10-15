@@ -1,0 +1,72 @@
+{
+    "$schema": "https://www.krakend.io/schema/v2.4/krakend.json",
+    "version": 3,
+    "endpoints": [
+      {
+        "endpoint": "/api/books/",
+        "method":"GET",
+        "backend": [
+          {
+            "url_pattern": "/books/",
+            "method": "GET",
+            "host" : ["http://localhost:5000"]
+          }
+        ]
+      },
+      {
+        "endpoint": "/api/books/",
+        "method": "POST",
+        "backend": [
+          {
+            "url_pattern": "/books/",
+            "method": "POST",
+            "encoding": "json",
+            "host": ["http://localhost:5000"],
+            "extra_config": {
+              "backend/http": {
+                "return_error_details": "backend_alias"
+              },
+              "modifier/body-generator": {
+                "path": "./reqBody.json.tmpl",
+                "content_type": "application/json",
+                "debug": true
+              }
+            }
+          }
+        ]
+      },
+      {
+        "endpoint": "/api/books/{id}",
+        "method": "GET",
+        "backend": [
+          {
+            "url_pattern": "/books/{id}",
+            "method": "GET",
+            "host": ["http://localhost:5000"],
+            "extra_config": {
+              "backend/http": {
+                "return_error_details": "backend_alias"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "endpoint": "/api/search",
+        "method": "GET",
+        "input_query_strings": ["author", "published", "title", "first_sentence"],
+        "backend": [
+          {
+            "url_pattern": "/search",
+            "method": "GET",
+            "host": ["http://localhost:5000"],
+            "extra_config": {
+              "backend/http": {
+                "return_error_details": "backend_alias"
+              }
+            }
+          }
+        ]
+      }
+    ]
+}

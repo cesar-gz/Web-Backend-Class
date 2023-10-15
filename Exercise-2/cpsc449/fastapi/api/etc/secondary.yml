@@ -1,0 +1,22 @@
+fuse:
+  dir: "./var/secondary/fuse"
+  allow-other: false
+  debug: false
+
+data:
+  dir: "./var/secondary/data"
+  retention: "10m"
+  retention-monitor-interval: "1m"
+
+
+
+skip-sync: false
+exit-on-error: false
+
+http:
+  addr: ":20203"
+
+lease:
+  type: "static"
+  advertise-url: "http://localhost:20202"
+  candidate: false
