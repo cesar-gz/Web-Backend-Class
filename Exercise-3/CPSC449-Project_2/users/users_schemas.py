@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from pydantic_settings import BaseSettings
 from typing import List
 
 class User_info(BaseModel):
@@ -14,3 +15,7 @@ class User(BaseModel):
 class User_Role(BaseModel):
     user_id: int
     role_id: int
+
+class Settings(BaseSettings, env_file=".env", extra="ignore"):
+    user_database: str
+    user_logging_config: str

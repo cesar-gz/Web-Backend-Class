@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from pydantic_settings import BaseSettings
 from typing import List
 
 class Department(BaseModel):
@@ -84,3 +85,7 @@ class User_info(BaseModel):
 class Create_User(BaseModel):
     name: str
     roles: List
+
+class Settings(BaseSettings, env_file=".env", extra="ignore"):
+    enrollment_database: str
+    enrollment_logging_config: str

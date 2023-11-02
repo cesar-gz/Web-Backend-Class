@@ -1,0 +1,41 @@
+[2023-11-02 10:25:51,954] DEBUG in users.users_routes:
+        SELECT * FROM users WHERE name = 'Cesar'
+
+[2023-11-02 10:25:52,191] DEBUG in users.users_routes: BEGIN
+[2023-11-02 10:25:52,191] DEBUG in users.users_routes:
+        INSERT INTO users (name, password)
+        VALUES ('Cesar', 'pbkdf2_sha256$260000$71382c48840fdd5a500bfd9c019acc64$dlqyk27G9b5+0g8HpBARRkyFuNlOiB0j1jwzawGeF1w=')
+
+[2023-11-02 10:25:52,200] DEBUG in users.users_routes:
+        SELECT * FROM users WHERE name = 'Cesar'
+
+[2023-11-02 10:25:52,201] DEBUG in users.users_routes:
+        INSERT INTO user_role (user_id, role_id)
+        VALUES (603, 1)
+
+[2023-11-02 10:25:52,204] DEBUG in users.users_routes: COMMIT
+[2023-11-02 10:25:52,234] DEBUG in httpx: load_ssl_context verify=True cert=None trust_env=True http2=False
+[2023-11-02 10:25:52,244] DEBUG in httpx: load_verify_locations cafile='/home/cesar/Desktop/Web-Backend/Exercise-3/CPSC449-Project_2/myenv/lib/python3.10/site-packages/certifi/cacert.pem'
+[2023-11-02 10:25:52,323] DEBUG in httpcore.connection: connect_tcp.started host='localhost' port=5000 local_address=None timeout=5.0 socket_options=None
+[2023-11-02 10:25:52,327] DEBUG in httpcore.connection: connect_tcp.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x7f08ac4f1420>
+[2023-11-02 10:25:52,327] DEBUG in httpcore.http11: send_request_headers.started request=<Request [b'POST']>
+[2023-11-02 10:25:52,328] DEBUG in httpcore.http11: send_request_headers.complete
+[2023-11-02 10:25:52,328] DEBUG in httpcore.http11: send_request_body.started request=<Request [b'POST']>
+[2023-11-02 10:25:52,328] DEBUG in httpcore.http11: send_request_body.complete
+[2023-11-02 10:25:52,328] DEBUG in httpcore.http11: receive_response_headers.started request=<Request [b'POST']>
+[2023-11-02 10:25:52,341] DEBUG in httpcore.http11: receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'date', b'Thu, 02 Nov 2023 17:25:51 GMT'), (b'server', b'uvicorn'), (b'content-length', b'39'), (b'content-type', b'application/json')])
+[2023-11-02 10:25:52,341] INFO in httpx: HTTP Request: POST http://localhost:5000/registrar/create_user "HTTP/1.1 200 OK"
+[2023-11-02 10:25:52,342] DEBUG in httpcore.http11: receive_response_body.started request=<Request [b'POST']>
+[2023-11-02 10:25:52,342] DEBUG in httpcore.http11: receive_response_body.complete
+[2023-11-02 10:25:52,342] DEBUG in httpcore.http11: response_closed.started
+[2023-11-02 10:25:52,343] DEBUG in httpcore.http11: response_closed.complete
+[2023-11-02 10:25:52,343] DEBUG in httpcore.connection: close.started
+[2023-11-02 10:25:52,344] DEBUG in httpcore.connection: close.complete
+[2023-11-02 10:39:54,556] DEBUG in users.users_routes:
+        SELECT * FROM users WHERE name = 'Cesar'
+
+[2023-11-02 10:39:54,745] DEBUG in users.users_routes:
+           SELECT role FROM user_role
+           JOIN role ON user_role.role_id = role.rid
+           JOIN users ON user_role.user_id = users.uid
+           WHERE user_id = 603

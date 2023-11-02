@@ -10,11 +10,6 @@ import logging.config
 from fastapi import Depends, HTTPException, APIRouter, status, Query
 from users.users_schemas import *
 from users.users_hash import hash_password, verify_password
-from pydantic_settings import BaseSettings
-
-class Settings(BaseSettings, env_file=".env", extra="ignore"):
-    database: str
-    logging_config: str
 
 DEBUG = False
 
@@ -144,7 +139,7 @@ def get_db_write(logger: logging.Logger = Depends(get_logger)):
         raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Database unavailable")
 
 
-logging.config.fileConfig(settings.logging_config, disable_existing_loggers=False)
+logging.config.fileConfig(settings.user_logging_config, disable_existing_loggers=False)
 
 #==========================================Users==================================================
 
