@@ -5,13 +5,21 @@ import collections
 import os
 import httpx
 import datetime
+import logging.config
 
 from fastapi import Depends, HTTPException, APIRouter, status, Query
 from users.users_schemas import *
 from users.users_hash import hash_password, verify_password
+from pydantic_settings import BaseSettings
 
+class Settings(BaseSettings, env_file=".env", extra="ignore"):
+    database: str
+    logging_config: str
+
+DEBUG = False
 
 router = APIRouter()
+settings = Settings()
 
 primary_database = "var/primary/fuse/users.db"
 secondary_database = "var/secondary/fuse/users.db"
@@ -60,11 +68,17 @@ def generate_claims(username, user_id, roles):
 
     return token
 
+def get_logger():
+    return logging.getLogger(__name__)
+
 # Flag to track the last database used for read operations
 last_read_db = None  # Start with None to use secondary database first
 
 # Connect to the appropriate database based on the endpoint
-def get_db_read():
+def get_db_read(logger: logging.Logger = Depends(get_logger)):
+
+    if DEBUG:
+        print("Using read-only db")
 
     # Database availability check
     available_databases = []
@@ -89,31 +103,48 @@ def get_db_read():
             # if so, check last db used, switch to other db
             if last_read_db == secondary_database:
                 last_read_db = tertiary_database
+                if DEBUG:
+                    print("tertiary db used")
             else:
                 last_read_db = secondary_database
+                if DEBUG:
+                    print("secondary db used")
         # else if secondary is available and tertiary is not, set to secondary
         elif available_databases[1] and not available_databases[2]:
             last_read_db = secondary_database
+            if DEBUG:
+                    print("secondary db used")
         # else if secondary is not available and tertiary is, set to tertiary
         elif not available_databases[1] and available_databases[2]:
             last_read_db = tertiary_database
+            if DEBUG:
+                    print("tertiary db used")
         # else set to primary as a last resort
         else:
             last_read_db = primary_database
+            if DEBUG:
+                    print("primary db used")
 
         with contextlib.closing(sqlite3.connect(last_read_db, check_same_thread=False)) as db:
             db.row_factory = sqlite3.Row
+            db.set_trace_callback(logger.debug)
             yield db
 
-def get_db_write():
+def get_db_write(logger: logging.Logger = Depends(get_logger)):
+
+    if DEBUG:
+        print("Using write allowed db")
 
     if os.path.exists(primary_database):
         with contextlib.closing(sqlite3.connect(primary_database, check_same_thread=False)) as db:
             db.row_factory = sqlite3.Row
+            db.set_trace_callback(logger.debug)
             yield db
     else:
         raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Database unavailable")
 
+
+logging.config.fileConfig(settings.logging_config, disable_existing_loggers=False)
 
 #==========================================Users==================================================
 
@@ -290,26 +321,77 @@ def search_for_users(uid: typing.Optional[str] = None,
     if not search_data:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No users found that match search parameters")
 
+    previous_uid = None
     for user in search_data:
         cursor.execute(
             """
-            SELECT role FROM user_role
+            SELECT role FROM users
             JOIN role ON user_role.role_id = role.rid
-            JOIN users ON user_role.user_id = users.uid
-            WHERE user_id = ?
+            JOIN user_role ON users.uid = user_role.user_id
+            WHERE uid = ?
             """,
             (user["uid"],)
         )
         roles_data = cursor.fetchall()
         roles = [role["role"] for role in roles_data]
 
-        user_information = User_info(
-            uid=user["uid"],
-            name=user["name"],
-            password=user["password"],
-            roles=roles
-        )
-
-        users_info.append(user_information)
+        if previous_uid != user["uid"]:
+            user_information = User_info(
+                uid=user["uid"],
+                name=user["name"],
+                password=user["password"],
+                roles=roles
+            )
+            users_info.append(user_information)
+        previous_uid = user["uid"]
 
     return {"users" : users_info}
+
+
+# Change a user's role
+@router.put("/debug/users/{user_id}/role_change", tags=['Debug'])
+def change_user_role(user_id: int, roles: List[str], db: sqlite3.Connection = Depends(get_db_write)):
+    cursor = db.cursor()
+
+    # Check if exist
+    cursor.execute(
+        """
+        SELECT * FROM users WHERE uid = ?
+        """, (user_id,)
+    )
+    user_data = cursor.fetchone()
+
+    if not user_data:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+
+    # Delete old role data
+    cursor.execute(
+        """
+        DELETE FROM user_role WHERE user_id = ?
+        """, (user_id,)
+    )
+
+    # Update new role data
+    for role in roles:
+
+        cursor.execute(
+        """
+        SELECT rid FROM role WHERE role = ?
+        """, (role,)
+        )
+        role_data = cursor.fetchone()
+
+        # Check if valid role was given
+        if not role_data:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Role not found")
+
+        cursor.execute(
+        """
+        INSERT INTO user_role (user_id, role_id)
+        VALUES (?, ?)
+        """, (user_id, role_data['rid'])
+        )
+
+    db.commit()
+
+    return {"message": "Roles changed successfully"}
