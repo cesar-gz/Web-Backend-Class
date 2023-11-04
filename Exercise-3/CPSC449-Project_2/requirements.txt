@@ -4,5 +4,5 @@ pydantic
 pydantic_settings
 jwcrypto
 httpx
-sqlite3
 foreman
+redis[hiredis]

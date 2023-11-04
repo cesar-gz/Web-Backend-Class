@@ -101,55 +101,55 @@
 
 [2023-11-02 13:33:36,212] DEBUG in enrollment.enrollment_routes: SELECT * FROM class WHERE id = 2
 
-[2023-11-02 13:43:45,240] DEBUG in enrollment.enrollment_routes: BEGIN 
-[2023-11-02 13:43:45,240] DEBUG in enrollment.enrollment_routes: 
+[2023-11-02 13:43:45,240] DEBUG in enrollment.enrollment_routes: BEGIN
+[2023-11-02 13:43:45,240] DEBUG in enrollment.enrollment_routes:
             INSERT INTO class (name, course_code, section_number, current_enroll, max_enroll, department_id)
             VALUES ('Taxes 101', 'TAX 101', 1, 30, 30, 1)
-            
-[2023-11-02 13:43:45,241] DEBUG in enrollment.enrollment_routes: 
+
+[2023-11-02 13:43:45,241] DEBUG in enrollment.enrollment_routes:
             INSERT INTO instructor_class (instructor_id, class_id)
             VALUES (1, 15)
-            
+
 [2023-11-02 13:43:45,241] DEBUG in enrollment.enrollment_routes: COMMIT
-[2023-11-02 13:46:40,684] DEBUG in enrollment.enrollment_routes: 
+[2023-11-02 13:46:40,684] DEBUG in enrollment.enrollment_routes:
         SELECT * FROM users
         JOIN user_role ON users.uid = user_role.user_id
         JOIN role ON user_role.role_id = role.rid
         WHERE uid = 1 AND role = 'instructor'
-        
+
 [2023-11-02 13:46:40,685] DEBUG in enrollment.enrollment_routes: SELECT * FROM class WHERE id = 2
-[2023-11-02 13:47:13,780] DEBUG in enrollment.enrollment_routes: 
+[2023-11-02 13:47:13,780] DEBUG in enrollment.enrollment_routes:
         SELECT * FROM users
         JOIN user_role ON users.uid = user_role.user_id
         JOIN role ON user_role.role_id = role.rid
         WHERE uid = 1 AND role = 'instructor'
-        
+
 [2023-11-02 13:47:13,780] DEBUG in enrollment.enrollment_routes: SELECT * FROM class WHERE id = 1
-[2023-11-02 13:47:43,385] DEBUG in enrollment.enrollment_routes: 
+[2023-11-02 13:47:43,385] DEBUG in enrollment.enrollment_routes:
         SELECT * FROM users
         JOIN user_role ON users.uid = user_role.user_id
         JOIN role ON user_role.role_id = role.rid
         WHERE uid = 1 AND role = 'instructor'
-        
-[2023-11-02 13:47:43,386] DEBUG in enrollment.enrollment_routes: 
+
+[2023-11-02 13:47:43,386] DEBUG in enrollment.enrollment_routes:
         SELECT * FROM users
         JOIN user_role ON users.uid = user_role.user_id
         JOIN role ON user_role.role_id = role.rid
         JOIN waitlist ON users.uid = waitlist.student_id
         WHERE uid = 1 AND role = 'student'
-        
+
 [2023-11-02 13:51:09,607] DEBUG in enrollment.enrollment_routes: SELECT * FROM class WHERE id = 1
-[2023-11-02 13:51:09,608] DEBUG in enrollment.enrollment_routes: BEGIN 
+[2023-11-02 13:51:09,608] DEBUG in enrollment.enrollment_routes: BEGIN
 [2023-11-02 13:51:09,608] DEBUG in enrollment.enrollment_routes: DELETE FROM class WHERE id = 1
 [2023-11-02 13:51:09,608] DEBUG in enrollment.enrollment_routes: COMMIT
-[2023-11-02 13:52:39,272] DEBUG in enrollment.enrollment_routes: BEGIN 
+[2023-11-02 13:52:39,272] DEBUG in enrollment.enrollment_routes: BEGIN
 [2023-11-02 13:52:39,272] DEBUG in enrollment.enrollment_routes: INSERT INTO users (name) VALUES ('CESAR')
 [2023-11-02 13:52:39,273] DEBUG in enrollment.enrollment_routes: SELECT rid FROM role WHERE role = 'registrar'
-[2023-11-02 13:52:39,273] DEBUG in enrollment.enrollment_routes: 
+[2023-11-02 13:52:39,273] DEBUG in enrollment.enrollment_routes:
         SELECT * FROM users WHERE name = 'CESAR'
-        
-[2023-11-02 13:52:39,273] DEBUG in enrollment.enrollment_routes: 
+
+[2023-11-02 13:52:39,273] DEBUG in enrollment.enrollment_routes:
             INSERT INTO user_role (user_id, role_id)
             VALUES (601, 3)
-            
+
 [2023-11-02 13:52:39,273] DEBUG in enrollment.enrollment_routes: COMMIT

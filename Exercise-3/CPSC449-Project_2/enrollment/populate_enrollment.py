@@ -293,7 +293,7 @@ def populate_database():
                     PRIMARY KEY (student_id, class_id),
                     FOREIGN KEY(student_id) REFERENCES users (uid),
                     FOREIGN KEY(class_id) REFERENCES class (id)
-                    )"""
+                    );"""
     create_table(conn, dropped_table)
 
     waitlist_table ="""CREATE TABLE IF NOT EXISTS waitlist (
@@ -301,11 +301,11 @@ def populate_database():
                     waitlist_count integer,
                     PRIMARY KEY (student_id),
                     FOREIGN KEY(student_id) REFERENCES users (uid)
-                    )"""
+                    );"""
     create_table(conn, waitlist_table)
 
     cursor = conn.cursor()
-    
+
     roles = ['student', 'instructor', 'registrar']
     for role in roles:
         cursor.execute(
@@ -315,7 +315,7 @@ def populate_database():
             """,
             (role,)
         )
-    
+
     department = ["CHEM","CPSC","ENGL","MATH","PHYS","HIST","BIOL","GEOL"]
     for dept in department:
         cursor.execute(
@@ -421,7 +421,7 @@ def populate_database():
             dropped_data.class_id
             )
         )
-    
+
     #Update more tables for testing purposes
     #Have student id = 1 have max number of waitlists
     cursor.execute(
@@ -466,6 +466,13 @@ def populate_database():
         WHERE student_id = 1
         """
     )
+
+    cursor.execute(
+        "CREATE INDEX users_idx_00015c29 ON users(name);"
+    )
+
+    
+
 
     conn.commit()
     cursor.close()

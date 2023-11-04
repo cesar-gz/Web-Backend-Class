@@ -139,7 +139,7 @@ def get_db_write(logger: logging.Logger = Depends(get_logger)):
         raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Database unavailable")
 
 
-logging.config.fileConfig(settings.user_logging_config, disable_existing_loggers=False)
+logging.config.fileConfig(settings.users_logging_config, disable_existing_loggers=False)
 
 #==========================================Users==================================================
 

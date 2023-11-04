@@ -17,5 +17,5 @@ class User_Role(BaseModel):
     role_id: int
 
 class Settings(BaseSettings, env_file=".env", extra="ignore"):
-    user_database: str
-    user_logging_config: str
+    users_database: str
+    users_logging_config: str
